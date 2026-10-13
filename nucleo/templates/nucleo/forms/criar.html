@@ -5,13 +5,17 @@
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Cadastro</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <div class="container">
         <h1>Adicionar Colaborador</h1>
-        <p></p>
+        {% if messages %}
+            {% for message in messages %}
+                <p class="mensagem {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
         <form action="{% url 'nucleo-salvar' %}" method="POST">
             <div>
                 <label>Nome</label>
