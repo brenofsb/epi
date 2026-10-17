@@ -5,8 +5,8 @@ Nesta etapa: CRUD de colaboradores (cadastrar, listar, pesquisar por nome, edita
 
 1. Clone o repositório:
 ```
-git clone https://github.com/SEU_USUARIO/NOME_DO_REPO.git
-cd NOME_DO_REPO
+git clone https://github.com/brenofsb/epi.git
+cd epi
 ```
 
 2. Instale as dependências:
