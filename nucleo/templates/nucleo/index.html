@@ -1,89 +1,46 @@
-{% load static %}
+{% extends 'nucleo/base.html' %}
 
-<!DOCTYPE html>
-<html lang="pt-BR">
+{% block titulo %}Colaboradores{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Colaboradores</title>
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-
-<body>
-    <header class="topo">
-        <span class="topo-titulo">Home</span>
-        <span class="topo-usuario">Breno Borges</span>
-    </header>
-
-    <div class="layout">
-        <nav class="menu">
-            <h3>Cadastros</h3>
-            <a href="{% url 'nucleo-inicial' %}">Colaborador</a>
-            <a href="#">Equipamentos</a>
-
-            <h3>Ação</h3>
-            <a href="#">Controle de EPI</a>
-
-            <h3>Relatórios</h3>
-            <a href="#">Empréstimo</a>
-
-            <h3>Configurações</h3>
-            <a href="#">Perfil</a>
-            <a href="#">Sistema</a>
-
-            <a href="#" class="menu-sair">Sair</a>
-        </nav>
-
-        <div class="container">
-            <h1>Lista de Colaboradores</h1>
-            <a href="{% url 'nucleo-criar' %}" class="btn-criar">Adicionar Colaborador</a>
-            <form method="get">
-                <input type="text" name="q" placeholder="Pesquisar pelo nome" value="{{ request.GET.q }}" />
-                <button type="submit">Pesquisar</button>
-            </form>
-            <br />
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for colaborador in colaboradores %}
-                    <tr>
-                        <td>{{ colaborador.id }}</td>
-                        <td>{{ colaborador.nome }}</td>
-                        <td>{{ colaborador.telefone }}</td>
-                        <td>
-                            <a href="{% url 'nucleo-editar' colaborador.id %}" class="btn-criar">Editar</a>
-                            <form action="{% url 'nucleo-excluir' colaborador.id %}" method="POST"
-                                style="display:inline"
-                                onsubmit="return confirm('Quer mesmo remover {{ colaborador.nome }}?');">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-excluir">Excluir</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">
-                            Nenhum colaborador encontrado.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-        </div>
-    </div>
-
-
-</body>
-
-</html>
+{% block conteudo %}
+<h1>Lista de Colaboradores</h1>
+<a href="{% url 'nucleo-criar' %}" class="btn-criar">Adicionar Colaborador</a>
+<form method="get">
+    <input type="text" name="q" placeholder="Pesquisar pelo nome" value="{{ request.GET.q }}" />
+    <button type="submit">Pesquisar</button>
+</form>
+<br />
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for colaborador in colaboradores %}
+        <tr>
+            <td>{{ colaborador.id }}</td>
+            <td>{{ colaborador.nome }}</td>
+            <td>{{ colaborador.telefone }}</td>
+            <td>
+                <a href="{% url 'nucleo-editar' colaborador.id %}" class="btn-criar">Editar</a>
+                <form action="{% url 'nucleo-excluir' colaborador.id %}" method="POST" style="display:inline"
+                    onsubmit="return confirm('Quer mesmo remover {{ colaborador.nome }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-excluir">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">
+                Nenhum colaborador encontrado.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

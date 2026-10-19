@@ -1,0 +1,27 @@
+{% extends 'nucleo/base.html' %}
+
+{% block titulo %}Equipamentos{% endblock %}
+
+{% block conteudo %}
+<h1>Lista de Equipamentos</h1>
+<a href="{% url 'equipa-criar' %}" class="btn-criar">Adicionar Equipamento</a>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for equipamento in equipamentos %}
+    <tr>
+      <td>{{ equipamento.id }}</td>
+      <td>{{ equipamento.nome }}</td>
+      {% empty %}
+    <tr>
+      <td colspan="4">Nenhum equipamento encontrado.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Controle de EPI{% endblock %}</title>
+
+    <link rel="icon" href="{% static 'imagens/icon.ico' %}" sizes="any">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <header class="topo">
+        <span class="topo-titulo">Home</span>
+        <div class="topo-usuario">
+            <span>Breno Borges</span>
+            <img src="/static/imagens/jimmy_neutron.jpg" alt="usuario" class="foto-usuario">
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <nav class="menu">
+            <h3>Cadastros</h3>
+            <a href="{% url 'nucleo-inicial' %}">Colaborador</a>
+            <a href="{% url 'equipa' %}">Equipamentos</a>
+
+            <h3>Ação</h3>
+            <a href="#">Controle de EPI</a>
+
+            <h3>Relatórios</h3>
+            <a href="#">Empréstimo</a>
+
+            <h3>Configurações</h3>
+            <a href="#">Perfil</a>
+            <a href="#">Sistema</a>
+
+            <a href="#" class="menu-sair">Sair</a>
+        </nav>
+
+        <div class="container">
+            {% if messages %}
+            {% for message in messages %}
+            <p class="mensagem {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+
+            {% block conteudo %}{% endblock %}
+        </div>
+
+    </div>
+</body>
+
+</html>

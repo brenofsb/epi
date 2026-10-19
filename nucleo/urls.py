@@ -20,9 +20,16 @@ from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
+
+    # Colaboradores
     path('', views.home, name='nucleo-inicial'),
     path('criar', views.tela_criar, name='nucleo-criar'),
     path('salvar', views.salvar, name='nucleo-salvar'),
     path('editar/<int:id>', views.editar, name='nucleo-editar'),
     path('excluir/<int:id>', views.excluir, name='nucleo-excluir'),
+
+    # Equipamentos
+    path('equipamentos', views.equipa, name='equipa'),
+    path('equipamentos/criar', views.equipa_criar, name='equipa-criar'),
+    path('equipamentos/salvar', views.equipa_salvar, name='equipa-salvar'),
 ]

@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from nucleo.models import Colaborador
+from nucleo.models import Colaborador, Equipamento
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
+# Colaboradores
 def home(req):
     busca = req.GET.get('q', '')
     colaboradores = Colaborador.objects.filter(nome__icontains=busca)
@@ -48,4 +49,25 @@ def excluir(req, id):
         colaborador.delete()
 
     return redirect('nucleo-inicial')
+
+# Equipamentos
+def equipa (req):
+    equipamentos = Equipamento.objects.all()
+    return render(req, 'nucleo/equipamentos/listar.html', {
+        'equipamentos': equipamentos,
+    }) 
+
+def equipa_criar (req):
+    return render(req, 'nucleo/equipamentos/criar.html')
+
+def equipa_salvar (req):
+    nome = req.POST.get('nome')
+
+    if not nome or not nome.strip():
+        messages.error(req, 'Equipamento não foi cadastrado! Preencher o campo: Nome')
+        return redirect('equipa-criar')
+
+    Equipamento.objects.create(nome=nome.strip())
+    messages.success(req, 'Equipamento cadastrado com sucesso!')
+    return redirect('equipa-criar')
 
