@@ -64,7 +64,7 @@ def equipa_salvar (req):
     nome = req.POST.get('nome')
 
     if not nome or not nome.strip():
-        messages.error(req, 'Equipamento não foi cadastrado! Preencher o campo: Nome')
+        messages.error(req, 'Equipamento não cadastrado! Preencher o campo: Nome')
         return redirect('equipa-criar')
 
     Equipamento.objects.create(nome=nome.strip())
