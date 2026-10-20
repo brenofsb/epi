@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from nucleo.models import Colaborador, Equipamento
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.db.models.deletion import ProtectedError
 
 # Colaboradores
 def home(req):
@@ -70,4 +71,36 @@ def equipa_salvar (req):
     Equipamento.objects.create(nome=nome.strip())
     messages.success(req, 'Equipamento cadastrado com sucesso!')
     return redirect('equipa-criar')
+
+def equipa_editar(req, id):
+    equipamento = get_object_or_404(Equipamento, id=id)
+
+    if req.method == 'POST':
+        nome = req.POST.get('nome', '')
+
+        if not nome.strip():
+            messages.error(req, 'Equipamento não atualizado! Preencher o campo: Nome')
+            return redirect('equipa-editar', id=id)
+
+        equipamento.nome = nome.strip()
+        equipamento.save()
+        messages.success(req, 'Equipamento atualizado com sucesso!')
+        return redirect('equipa')
+
+    return render(req, 'nucleo/equipamentos/editar.html', {
+        'equipamento': equipamento,
+    })
+
+def equipa_excluir(req, id):
+    equipamento = get_object_or_404(Equipamento, id=id)
+
+    if req.method == 'POST':
+        try:
+            equipamento.delete()
+        except ProtectedError:
+            messages.error(req, 'Equipamento não pôde ser excluído: Associado a um empréstimo.')
+        else:
+            messages.success(req, 'Equipamento excluído com sucesso!')
+
+    return redirect('equipa')
 

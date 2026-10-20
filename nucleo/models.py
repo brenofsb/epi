@@ -28,7 +28,7 @@ class Emprestimo(models.Model):
     dt_emprest = models.DateTimeField(default=timezone.now)
     dt_prev_devo = models.DateTimeField()
     dt_devo = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=status_choices, default='Emprestado')
+    status = models.CharField(max_length=20, choices=status_choices, default='emprestado')
     condicoes = models.CharField(max_length=200, blank=True)
     obs_devo = models.CharField(max_length=200, blank=True)
 

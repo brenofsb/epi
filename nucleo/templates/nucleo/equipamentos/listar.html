@@ -4,12 +4,14 @@
 
 {% block conteudo %}
 <h1>Lista de Equipamentos</h1>
+
 <a href="{% url 'equipa-criar' %}" class="btn-criar">Adicionar Equipamento</a>
 <table>
   <thead>
     <tr>
       <th>ID</th>
       <th>Nome</th>
+      <th>Ações</th>
     </tr>
   </thead>
   <tbody>
@@ -17,7 +19,17 @@
     <tr>
       <td>{{ equipamento.id }}</td>
       <td>{{ equipamento.nome }}</td>
-      {% empty %}
+      <td>
+        <a href="{% url 'equipa-editar' equipamento.id %}" class="btn-criar">Editar</a>
+        <form action="{% url 'equipa-excluir' equipamento.id %}" method="POST" style="display:inline"
+          onsubmit="return confirm('Quer mesmo remover {{ equipamento.nome }}?');">
+          {% csrf_token %}
+          <button type="submit" class="btn-excluir">Excluir</button>
+        </form>
+      </td>
+    </tr>
+
+    {% empty %}
     <tr>
       <td colspan="4">Nenhum equipamento encontrado.</td>
     </tr>

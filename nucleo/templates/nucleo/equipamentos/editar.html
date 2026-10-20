@@ -1,0 +1,21 @@
+{% extends 'nucleo/base.html' %}
+
+# Usar somente se a página precisa de imagens
+# {% load static %} 
+
+{% block titulo %}Titulo{% endblock %}
+
+{% block conteudo %}
+<h1>Editar Colaborador</h1>
+
+<form action="{% url 'equipa-editar' equipamento.id %}" method="POST" class="formulario">
+    <div>
+        <label>Nome</label>
+        <input type="text" name="nome" value="{{ equipamento.nome }}" />
+    </div>
+    <div>
+        <input type="submit" value="Salvar" />
+    </div>
+    {% csrf_token %}
+</form>
+{% endblock %}

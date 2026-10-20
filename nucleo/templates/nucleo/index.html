@@ -4,6 +4,7 @@
 
 {% block conteudo %}
 <h1>Lista de Colaboradores</h1>
+
 <a href="{% url 'nucleo-criar' %}" class="btn-criar">Adicionar Colaborador</a>
 <form method="get">
     <input type="text" name="q" placeholder="Pesquisar pelo nome" value="{{ request.GET.q }}" />
