@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from nucleo.models import Colaborador, Equipamento
+from nucleo.models import Colaborador, Equipamento, Emprestimo
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models.deletion import ProtectedError
+from datetime import datetime
+from django.utils import timezone
 
 # Colaboradores
 def home(req):
@@ -103,4 +105,60 @@ def equipa_excluir(req, id):
             messages.success(req, 'Equipamento excluído com sucesso!')
 
     return redirect('equipa')
+
+# Emprestimo
+def emprest_criar(req):
+    if req.method == 'POST':
+        try:
+            dt_emprest = timezone.make_aware(
+                datetime.fromisoformat(req.POST.get('dt_emprest'))
+            )
+            dt_prev_devo = timezone.make_aware(
+                datetime.fromisoformat(req.POST.get('dt_prev_devo'))
+            )
+        except (TypeError, ValueError):
+            messages.error(req, 'Informe datas válidas para o empréstimo e a previsão de devolução.')
+            return redirect('emprestimo-criar')
+
+        if dt_prev_devo <= timezone.now():
+            messages.error(req, 'A previsão de devolução deve ser posterior à data e hora atuais.')
+            return redirect('emprestimo-criar')
+
+        status = req.POST.get('status')
+        status_validos = [
+            valor for valor, texto in Emprestimo.status_choices[:2]
+        ]
+
+        if status not in status_validos:
+            messages.error(req, 'Selecione um status válido para o cadastro.')
+            return redirect('emprestimo-criar')
+
+        colaborador = get_object_or_404(
+            Colaborador,
+            pk=req.POST.get('colaborador')
+        )
+        equipamento = get_object_or_404(
+            Equipamento,
+            pk=req.POST.get('equipamento')
+        )
+
+        Emprestimo.objects.create(
+            colaborador=colaborador,
+            equipamento=equipamento,
+            dt_emprest=dt_emprest,
+            dt_prev_devo=dt_prev_devo,
+            status=status,
+            condicoes=req.POST.get('condicoes', '').strip(),
+        )
+
+        messages.success(req, 'Empréstimo cadastrado com sucesso!')
+        return redirect('emprestimo-criar')
+
+    return render(req, 'nucleo/emprestimo/criar.html',
+    {'colaboradores': Colaborador.objects.all(),
+    'equipamentos': Equipamento.objects.all(),
+    'status': Emprestimo.status_choices[: 2],
+    })
+
+
 

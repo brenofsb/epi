@@ -140,3 +140,23 @@ th, td {
     cursor: pointer;
 }
 
+.formulario-emprestimo {
+    max-width: 560px;
+}
+
+.formulario-emprestimo .campo {
+    margin-bottom: 16px;
+}
+
+.formulario-emprestimo select,
+.formulario-emprestimo input[type="text"],
+.formulario-emprestimo input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background-color: white;
+    font: inherit;
+}
+

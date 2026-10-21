@@ -34,4 +34,7 @@ urlpatterns = [
     path('equipamentos/salvar', views.equipa_salvar, name='equipa-salvar'),
     path('equipamentos/editar/<int:id>', views.equipa_editar, name='equipa-editar'),
     path('equipamento/excluir/<int:id>', views.equipa_excluir, name='equipa-excluir'),
+
+    # Emprestimos
+    path('emprestimo/criar', views.emprest_criar, name='emprestimo-criar')
 ]

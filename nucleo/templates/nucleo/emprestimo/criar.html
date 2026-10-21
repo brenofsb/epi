@@ -1,0 +1,53 @@
+{% extends 'nucleo/base.html' %}
+
+{% block titulo %}Cadastro de emprestimo{% endblock %}
+
+{% block conteudo %}
+<h1>Cadastrar Empréstimo</h1>
+
+<form action="{% url 'emprestimo-criar' %}" method="post" class="formulario formulario-emprestimo">
+    <div>
+        <label for="colaborador">Colaborador</label>
+        <select id="colaborador" name="colaborador">
+            {% for colaborador in colaboradores %}
+            <option value="{{ colaborador.id }}">{{ colaborador.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="equipamento">Equipamento</label>
+        <select id="equipamento" name="equipamento">
+            {% for equipamento in equipamentos %}
+            <option value="{{ equipamento.id }}">{{ equipamento.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="dt_emprest">Data do empréstimo</label>
+        <input id="dt_emprest" type="datetime-local" name="dt_emprest">
+    </div>
+
+    <div>
+        <label for="dt_prev_devo">Previsão de devolução</label>
+        <input id="dt_prev_devo" type="datetime-local" name="dt_prev_devo">
+    </div>
+
+    <div>
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            {% for valor, texto in status%}
+            <option value="{{ valor }}">{{ texto }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="condicoes">Condições do equipamento</label>
+        <input id="condicoes" type="text" name="condicoes">
+    </div>
+{% csrf_token %}
+<input type="submit" value="Cadastrar">
+</form>
+{% endblock %}
