@@ -36,9 +36,17 @@ def editar(req, id):
     colaborador = get_object_or_404(Colaborador, id=id)
 
     if req.method == 'POST':
-        colaborador.nome = req.POST.get('nome')
-        colaborador.telefone = req.POST.get('telefone')
+        nome = req.POST.get('nome', '')
+        telefone = req.POST.get('telefone', '')
+
+        if not nome.strip():
+            messages.error(req, 'Colaborador não atualizado! Preencher o campo Nome')
+            return redirect('nucleo-editar', id=id)
+
+        colaborador.nome = nome.strip()
+        colaborador.telefone = telefone
         colaborador.save()
+        messages.success(req, 'Colaborador atualizado com sucesso!')
         return redirect('nucleo-inicial')
 
     return render(req, 'nucleo/forms/editar.html', {
@@ -49,7 +57,12 @@ def excluir(req, id):
     colaborador = get_object_or_404(Colaborador, id=id)
 
     if req.method == 'POST':
-        colaborador.delete()
+        try:
+            colaborador.delete()
+        except ProtectedError:
+            messages.error(req, 'Colaborador não pôde ser excluído: Associado a um empréstimo.')
+        else:
+            messages.success(req, 'Colaborador excluído com sucesso!')
 
     return redirect('nucleo-inicial')
 
@@ -160,5 +173,55 @@ def emprest_criar(req):
     'status': Emprestimo.status_choices[: 2],
     })
 
+def emprest_listar(req):
+    emprestimo = Emprestimo.objects.select_related('colaborador', 'equipamento',).all()
 
+    return render(req, 'nucleo/emprestimo/listar.html', {'emprestimos': emprestimo,})
 
+def emprest_editar(req, id):
+    emprestimo = get_object_or_404(Emprestimo, pk=id)
+
+    if req.method == 'POST':
+        status = req.POST.get('status')
+        status_validos = [
+            valor for valor, texto in Emprestimo.status_choices
+        ]
+
+        if status not in status_validos:
+            messages.error(req, 'Selecione um status válido.')
+            return redirect('emprest-editar', id=id)
+
+        emprestimo.status = status
+
+        if status in ('devolvido', 'danificado', 'perdido'):
+            dt_devo_texto = req.POST.get('dt_devo', '')
+
+            if dt_devo_texto:
+                try:
+                    emprestimo.dt_devo = timezone.make_aware(
+                        datetime.fromisoformat(dt_devo_texto)
+                    )
+                except (TypeError, ValueError):
+                    messages.error(req, 'Informe uma data de devolução válida.')
+                    return redirect('emprest-editar', id=id)
+            else:
+                messages.error(req, 'Informe a data da devolução')
+                return redirect('emprest-editar', id=id)
+
+            emprestimo.obs_devo = req.POST.get('obs_devo', '').strip()
+
+        emprestimo.save()
+        messages.success(req, 'Empréstimo atualizado com sucesso!')
+        return redirect('emprest-listar')
+
+    dt_devo_value = ''
+    if emprestimo.dt_devo:
+        dt_devo_value = timezone.localtime(emprestimo.dt_devo).strftime(
+            '%Y-%m-%dT%H:%M'
+        )
+
+    return render(req, 'nucleo/emprestimo/editar.html', {
+        'emprestimo': emprestimo,
+        'status_choices': Emprestimo.status_choices,
+        'dt_devo_value': dt_devo_value,
+    })

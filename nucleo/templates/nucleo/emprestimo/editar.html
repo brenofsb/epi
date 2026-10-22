@@ -1,0 +1,66 @@
+{% extends 'nucleo/base.html' %}
+
+{% block titulo %}Edição{% endblock %}
+
+{% block conteudo %}
+<h1>Editar Empréstimo</h1>
+
+<div class="formulario formulario-emprestimo">
+    <p><strong>Colaborador:</strong> {{ emprestimo.colaborador }}</p>
+    <p><strong>Equipamento:</strong> {{ emprestimo.equipamento }}</p>
+    <p><strong>Data do empréstimo:</strong> {{ emprestimo.dt_emprest|date:"d/m/Y H:i" }}</p>
+    <p><strong>Previsão de devolução:</strong> {{ emprestimo.dt_prev_devo|date:"d/m/Y H:i" }}</p>
+
+    <form action="{% url 'emprest-editar' id=emprestimo.id %}" method="post">
+        {% csrf_token %}
+
+        <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                {% for valor, texto in status_choices %}
+                <option value="{{ valor }}" {% if emprestimo.status == valor %}selected{% endif %}>
+                    {{ texto }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="campos-devolucao">
+            <div>
+                <label for="dt_devo">Data da devolução</label>
+                <input
+                    id="dt_devo"
+                    type="datetime-local"
+                    name="dt_devo"
+                    value="{{ dt_devo_value }}"
+                >
+            </div>
+
+            <div>
+                <label for="obs_devo">Observação na devolução</label>
+                <input
+                    id="obs_devo"
+                    type="text"
+                    name="obs_devo"
+                    value="{{ emprestimo.obs_devo }}"
+                >
+            </div>
+        </div>
+
+        <input type="submit" value="Salvar">
+    </form>
+</div>
+
+<script>
+    const statusSelect = document.getElementById('status');
+    const camposDevolucao = document.getElementById('campos-devolucao');
+    const statusComDevolucao = ['devolvido', 'danificado', 'perdido'];
+
+    function atualizarCamposDevolucao() {
+        camposDevolucao.hidden = !statusComDevolucao.includes(statusSelect.value);
+    }
+
+    statusSelect.addEventListener('change', atualizarCamposDevolucao);
+    atualizarCamposDevolucao();
+</script>
+{% endblock %}

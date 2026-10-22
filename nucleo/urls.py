@@ -30,11 +30,13 @@ urlpatterns = [
 
     # Equipamentos
     path('equipamentos', views.equipa, name='equipa'),
-    path('equipamentos/criar', views.equipa_criar, name='equipa-criar'),
-    path('equipamentos/salvar', views.equipa_salvar, name='equipa-salvar'),
-    path('equipamentos/editar/<int:id>', views.equipa_editar, name='equipa-editar'),
+    path('equipamento/criar', views.equipa_criar, name='equipa-criar'),
+    path('equipamento/salvar', views.equipa_salvar, name='equipa-salvar'),
+    path('equipamento/editar/<int:id>', views.equipa_editar, name='equipa-editar'),
     path('equipamento/excluir/<int:id>', views.equipa_excluir, name='equipa-excluir'),
 
     # Emprestimos
-    path('emprestimo/criar', views.emprest_criar, name='emprestimo-criar')
+    path('emprestimo/criar', views.emprest_criar, name='emprestimo-criar'),
+    path('emprestimos', views.emprest_listar, name='emprest-listar'),
+    path('emprestimo/editar/<int:id>', views.emprest_editar, name='emprest-editar'),
 ]
