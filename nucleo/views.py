@@ -225,3 +225,33 @@ def emprest_editar(req, id):
         'status_choices': Emprestimo.status_choices,
         'dt_devo_value': dt_devo_value,
     })
+
+# Relatórios
+def rel_emprest (req):
+    filtro_nome = req.GET.get('nome', '').strip()
+    filtro_status = req.GET.get('status', '')
+    filtro_equipamento = req.GET.get('equipamento', '')
+
+    emprestimos = Emprestimo.objects.select_related(
+        'colaborador', 'equipamento'
+    ).all()
+
+    if filtro_nome:
+        emprestimos = emprestimos.filter(
+            colaborador__nome__icontains=filtro_nome
+        )
+    if filtro_status:
+        emprestimos = emprestimos.filter(status=filtro_status)
+    if filtro_equipamento:
+        emprestimos = emprestimos.filter(
+            equipamento_id=filtro_equipamento
+        )
+
+    return render(req, 'nucleo/relatorio/emprestimo.html', {
+        'emprestimos': emprestimos.order_by('-dt_emprest'),
+        'equipamentos': Equipamento.objects.all(),
+        'status_choices': Emprestimo.status_choices,
+        'filtro_nome': filtro_nome,
+        'filtro_status': filtro_status,
+        'filtro_equipamento': filtro_equipamento,
+    })

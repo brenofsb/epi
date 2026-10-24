@@ -39,4 +39,7 @@ urlpatterns = [
     path('emprestimo/criar', views.emprest_criar, name='emprestimo-criar'),
     path('emprestimos', views.emprest_listar, name='emprest-listar'),
     path('emprestimo/editar/<int:id>', views.emprest_editar, name='emprest-editar'),
+
+    # Relatórios
+    path('relatorios/emprestimos', views.rel_emprest, name='rel-emprest'),
 ]

@@ -1,0 +1,66 @@
+{% extends 'nucleo/base.html' %}
+
+{% block titulo %}Relatório de empréstimos{% endblock %}
+
+{% block conteudo %}
+<h1>Relatório de empréstimos</h1>
+
+<form method="get" class="formulario-emprestimo">
+    <div class="campo">
+        <label for="nome">Colaborador</label>
+        <input id="nome" type="text" name="nome" value="{{ filtro_nome }}" placeholder="Nome do colaborador">
+    </div>
+
+    <div class="campo">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="">Todos os status</option>
+            {% for valor, texto in status_choices %}
+            <option value="{{ valor }}" {% if filtro_status == valor %}selected{% endif %}>{{ texto }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="campo">
+        <label for="equipamento">Equipamento</label>
+        <select id="equipamento" name="equipamento">
+            <option value="">Todos os equipamentos</option>
+            {% for equipamento in equipamentos %}
+            <option value="{{ equipamento.id }}" {% if filtro_equipamento == equipamento.id|stringformat:'s' %}selected{% endif %}>{{ equipamento.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">Pesquisar</button>
+    <a href="{% url 'rel-emprest' %}">Limpar filtros</a>
+</form>
+<br />
+<table>
+    <thead>
+        <tr>
+            <th>Data do empréstimo</th>
+            <th>Colaborador</th>
+            <th>Equipamento</th>
+            <th>Status</th>
+            <th>Previsão de devolução</th>
+            <th>Data de devolução</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for emprestimo in emprestimos %}
+        <tr>
+            <td>{{ emprestimo.dt_emprest|date:"d/m/Y H:i" }}</td>
+            <td>{{ emprestimo.colaborador.nome }}</td>
+            <td>{{ emprestimo.equipamento.nome }}</td>
+            <td>{{ emprestimo.get_status_display }}</td>
+            <td>{{ emprestimo.dt_prev_devo|date:"d/m/Y H:i" }}</td>
+            <td>{{ emprestimo.dt_devo|date:"d/m/Y H:i"|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Nenhum empréstimo encontrado para os filtros informados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
