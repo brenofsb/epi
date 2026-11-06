@@ -60,7 +60,7 @@ def editar(req, id):
     if req.method == 'POST':
         nome = req.POST.get('nome', '')
         telefone = req.POST.get('telefone', '')
-        setor_id = req.POST.get('setor')
+        setor_id = req.POST.get('setor_id')
 
         if not nome.strip():
             messages.error(req, 'Colaborador não atualizado! Preencher o campo Nome')
@@ -282,7 +282,6 @@ def rel_emprest (req):
     filtro_nome = req.GET.get('nome', '').strip()
     filtro_status = req.GET.get('status', '')
     filtro_equipamento = req.GET.get('equipamento', '')
-
     emprestimos = Emprestimo.objects.select_related(
         'colaborador', 'equipamento'
     ).all()
@@ -297,7 +296,6 @@ def rel_emprest (req):
         emprestimos = emprestimos.filter(
             equipamento_id=filtro_equipamento
         )
-
     return render(req, 'nucleo/relatorio/emprestimo.html', {
         'emprestimos': emprestimos.order_by('-dt_emprest'),
         'equipamentos': Equipamento.objects.all(),

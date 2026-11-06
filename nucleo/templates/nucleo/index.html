@@ -17,6 +17,7 @@
             <th>ID</th>
             <th>Nome</th>
             <th>Telefone</th>
+            <th>Setor</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -26,6 +27,7 @@
             <td>{{ colaborador.id }}</td>
             <td>{{ colaborador.nome }}</td>
             <td>{{ colaborador.telefone }}</td>
+            <td>{{ colaborador.setor.nome }}</td>
             <td>
                 <a href="{% url 'nucleo-editar' colaborador.id %}" class="btn-criar">Editar</a>
                 <form action="{% url 'nucleo-excluir' colaborador.id %}" method="POST" style="display:inline"

@@ -31,6 +31,16 @@
         </select>
     </div>
 
+    <div class="campo">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="">Todos os status</option>
+            {% for valor, texto in status_choices %}
+            <option value="{{ valor }}" {% if filtro_status == valor %}selected{% endif %}>{{ texto }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
     <button type="submit">Pesquisar</button>
     <a href="{% url 'rel-emprest' %}">Limpar filtros</a>
 </form>

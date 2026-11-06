@@ -131,6 +131,16 @@ th, td {
     border-radius: 4px;
 }
 
+.formulario select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #777;
+    border-radius: 4px;
+    background-color: white;
+    font: inherit;
+}
+
 .formulario input[type="submit"] {
     padding: 8px 20px;
     border: none;
@@ -159,4 +169,3 @@ th, td {
     background-color: white;
     font: inherit;
 }
-
