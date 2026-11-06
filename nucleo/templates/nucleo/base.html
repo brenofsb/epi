@@ -38,7 +38,11 @@
             <a href="#">Perfil</a>
             <a href="{% url 'admin:index' %}">Sistema</a>
 
-            <a href="{% url 'auth-logout' %}" class="menu-sair">Sair</a>
+            <form action="{% url 'auth-logout' %}" method="POST" 
+                    onsubmit="return confirm('Quer mesmo sair?');">
+                    {% csrf_token %}
+                    <button type="submit" class="menu-sair">Sair</button>
+                </form>
         </nav>
 
         <div class="container">

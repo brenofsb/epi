@@ -5,10 +5,11 @@ from django.db.models.deletion import ProtectedError
 from datetime import datetime
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 # Colaboradores
 @login_required(login_url='auth-login')
+@permission_required('nucleo.view_colaborador', raise_exception=True)
 @require_GET
 def home(req):
     busca = req.GET.get('q', '')
@@ -20,6 +21,7 @@ def home(req):
 
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.add_colaborador', raise_exception=True)
 @require_GET
 def tela_criar(req):
     return render(req, 'nucleo/forms/criar.html', {
@@ -28,6 +30,7 @@ def tela_criar(req):
 
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.add_colaborador', raise_exception=True)
 @require_POST
 def salvar(req):
     nome = req.POST.get('nome', '')
@@ -49,10 +52,13 @@ def salvar(req):
         setor=setor,
     )
     messages.success(req, 'Colaborador cadastrado com sucesso!')
-    return redirect('nucleo-inicial')
+    if req.user.has_perm('nucleo.view_colaborador'):
+        return redirect('nucleo-inicial')
+    return redirect('nucleo-criar')
 
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.change_colaborador', raise_exception=True)
 @require_http_methods(["GET", "POST"])
 def editar(req, id):
     colaborador = get_object_or_404(Colaborador, id=id)
@@ -76,7 +82,9 @@ def editar(req, id):
         colaborador.setor = setor
         colaborador.save()
         messages.success(req, 'Colaborador atualizado com sucesso!')
-        return redirect('nucleo-inicial')
+        if req.user.has_perm('nucleo.view_colaborador'):
+            return redirect('nucleo-inicial')
+        return redirect('nucleo-editar', id=id)
 
     return render(req, 'nucleo/forms/editar.html', {
         'colaborador': colaborador,
@@ -85,6 +93,10 @@ def editar(req, id):
 
 
 @login_required(login_url='auth-login')
+@permission_required(
+    ('nucleo.view_colaborador', 'nucleo.delete_colaborador'),
+    raise_exception=True,
+)
 @require_POST
 def excluir(req, id):
     colaborador = get_object_or_404(Colaborador, id=id)
@@ -100,6 +112,7 @@ def excluir(req, id):
 
 # Equipamentos
 @login_required(login_url='auth-login')
+@permission_required('nucleo.view_equipamento', raise_exception=True)
 @require_GET
 def equipa (req):
     equipamentos = Equipamento.objects.all()
@@ -108,11 +121,13 @@ def equipa (req):
     }) 
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.add_equipamento', raise_exception=True)
 @require_GET
 def equipa_criar (req):
     return render(req, 'nucleo/equipamentos/criar.html')
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.add_equipamento', raise_exception=True)
 @require_POST
 def equipa_salvar (req):
     nome = req.POST.get('nome')
@@ -127,6 +142,7 @@ def equipa_salvar (req):
 
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.change_equipamento', raise_exception=True)
 @require_http_methods(["GET", "POST"])
 def equipa_editar(req, id):
     equipamento = get_object_or_404(Equipamento, id=id)
@@ -141,7 +157,9 @@ def equipa_editar(req, id):
         equipamento.nome = nome.strip()
         equipamento.save()
         messages.success(req, 'Equipamento atualizado com sucesso!')
-        return redirect('equipa')
+        if req.user.has_perm('nucleo.view_equipamento'):
+            return redirect('equipa')
+        return redirect('equipa-editar', id=id)
 
     return render(req, 'nucleo/equipamentos/editar.html', {
         'equipamento': equipamento,
@@ -149,6 +167,10 @@ def equipa_editar(req, id):
 
 
 @login_required(login_url='auth-login')
+@permission_required(
+    ('nucleo.view_equipamento', 'nucleo.delete_equipamento'),
+    raise_exception=True,
+)
 @require_POST
 def equipa_excluir(req, id):
     equipamento = get_object_or_404(Equipamento, id=id)
@@ -164,6 +186,7 @@ def equipa_excluir(req, id):
 
 # Emprestimo
 @login_required(login_url='auth-login')
+@permission_required('nucleo.add_emprestimo', raise_exception=True)
 @require_http_methods(["GET", "POST"])
 def emprest_criar(req):
     if req.method == 'POST':
@@ -219,6 +242,7 @@ def emprest_criar(req):
     })
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.view_emprestimo', raise_exception=True)
 @require_GET
 def emprest_listar(req):
     emprestimo = Emprestimo.objects.select_related('colaborador', 'equipamento',).all()
@@ -226,6 +250,7 @@ def emprest_listar(req):
     return render(req, 'nucleo/emprestimo/listar.html', {'emprestimos': emprestimo,})
 
 @login_required(login_url='auth-login')
+@permission_required('nucleo.change_emprestimo', raise_exception=True)
 @require_http_methods(["GET", "POST"])
 def emprest_editar(req, id):
     emprestimo = get_object_or_404(Emprestimo, pk=id)
@@ -261,7 +286,9 @@ def emprest_editar(req, id):
 
         emprestimo.save()
         messages.success(req, 'Empréstimo atualizado com sucesso!')
-        return redirect('emprest-listar')
+        if req.user.has_perm('nucleo.view_emprestimo'):
+            return redirect('emprest-listar')
+        return redirect('emprest-editar', id=id)
 
     dt_devo_value = ''
     if emprestimo.dt_devo:
@@ -277,6 +304,7 @@ def emprest_editar(req, id):
 
 # Relatórios
 @login_required(login_url='auth-login')
+@permission_required('nucleo.view_emprestimo', raise_exception=True)
 @require_GET
 def rel_emprest (req):
     filtro_nome = req.GET.get('nome', '').strip()

@@ -75,13 +75,19 @@ h1 {
 .menu a:hover {
     text-decoration: underline;
 }
-.menu-sair {
+.menu form {
+    display: flex;
     margin-top: auto;
-    margin-left: 0;
+}
+.menu-sair {
+    width: 100%;
+    margin: 0;
     padding: 8px;
+    font: inherit;
     text-align: center;
     border: 2px solid #555;
     background-color: white;
+    cursor: pointer;
 }
 
 .container {

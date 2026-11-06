@@ -2,4 +2,5 @@ __pycache__/
 *.pyc
 db.sqlite3
 staticfiles/
-/PASSO_A_PASSO_SETOR.md
+PASSO_A_PASSO_SETOR.md
+PASSO_A_PASSO_PERMISSOES.md

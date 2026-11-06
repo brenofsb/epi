@@ -76,6 +76,11 @@
     <h1>Entrar na sua conta</h1>
     <form method="post" action="{% url 'auth-login' %}">
       {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+
+      {% if erro %}
+      <p role="alert">{{ erro }}</p>
+      {% endif %}
 
       <label for="username">Usuário</label>
       <input type="text" name="username" id="username" autocomplete="username" required>

@@ -11,12 +11,15 @@ Sistema de gerenciamento de equipamentos de proteção individual (EPIs), desenv
 - Status de empréstimo: Emprestado, Fornecido, Devolvido, Danificado e Perdido.
 - Atualização do status e registro da data e observação da devolução.
 - Consulta de empréstimos com filtros por colaborador, equipamento e status.
-- Login e logout de usuários.
-- Proteção das telas do sistema para usuários autenticados.
-- Django Admin disponível para administração de usuários, grupos, permissões e dos modelos registrados.
+- Login e logout de usuários; o logout é enviado por formulário POST com proteção CSRF.
+- Redirecionamento após o login para a página solicitada quando o destino é seguro; caso contrário, para uma página permitida ao usuário.
+- Proteção das telas personalizadas por autenticação e permissões de visualizar, adicionar, alterar e excluir.
+- Django Admin disponível para gerenciar usuários, grupos, permissões e os modelos registrados.
 - Menu lateral e identificação do usuário na interface.
 
-As permissões de grupos configuradas no Django Admin são aplicadas ao próprio Admin. As telas personalizadas do sistema exigem login, mas não aplicam permissões de grupo específicas por operação.
+As permissões padrão do Django são aplicadas às telas personalizadas do sistema. Configure os grupos no Django Admin, atribuindo as permissões necessárias para cada modelo e associando os usuários aos grupos. Para excluir colaboradores ou equipamentos pelas telas do sistema, o usuário também precisa da permissão de visualização, pois a ação de exclusão é acessada pela listagem.
+
+Os links do menu permanecem visíveis mesmo quando o usuário não tem a permissão correspondente. O acesso continua protegido pelas views, que negam a operação sem a permissão necessária.
 
 ## Tecnologias
 
@@ -75,4 +78,4 @@ As permissões de grupos configuradas no Django Admin são aplicadas ao próprio
    - Sistema: <http://127.0.0.1:8000/>
    - Django Admin: <http://127.0.0.1:8000/admin/>
 
-O banco SQLite é armazenado no arquivo `db.sqlite3` na raiz do projeto. Usuários podem ser criados pelo Django Admin após o primeiro superusuário ser configurado.
+O banco SQLite é armazenado no arquivo `db.sqlite3` na raiz do projeto e não é versionado. Usuários, grupos e suas associações ficam nesse banco; crie o primeiro superusuário pelo comando acima e depois gerencie os demais usuários e grupos pelo Django Admin.
