@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nucleo',
+    'system_auth',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,4 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://localhost:8000',
-]
+LOGIN_URL = 'auth/'

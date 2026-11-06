@@ -16,7 +16,7 @@
     <header class="topo">
         <span class="topo-titulo">Home</span>
         <div class="topo-usuario">
-            <span>Breno Borges</span>
+            <span>{{ user.first_name }}</span>
             <img src="/static/imagens/jimmy_neutron.jpg" alt="usuario" class="foto-usuario">
         </div>
     </header>
@@ -36,9 +36,9 @@
 
             <h3>Configurações</h3>
             <a href="#">Perfil</a>
-            <a href="#">Sistema</a>
+            <a href="{% url 'admin:index' %}">Sistema</a>
 
-            <a href="#" class="menu-sair">Sair</a>
+            <a href="{% url 'auth-logout' %}" class="menu-sair">Sair</a>
         </nav>
 
         <div class="container">

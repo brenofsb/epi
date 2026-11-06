@@ -34,3 +34,9 @@ class Emprestimo(models.Model):
 
     def __str__(self):
         return f'{self.equipamento} - {self.colaborador}'
+
+class Setor(models.Model):
+    nome = models.CharField(max_length=30, null=False, blank=False)
+
+    def __str__(self):
+        return self.nome

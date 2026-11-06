@@ -1,81 +1,119 @@
-from django.shortcuts import render, redirect
-from nucleo.models import Colaborador, Equipamento, Emprestimo
+from nucleo.models import Colaborador, Equipamento, Emprestimo, Setor
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models.deletion import ProtectedError
 from datetime import datetime
 from django.utils import timezone
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
+from django.contrib.auth.decorators import login_required
 
 # Colaboradores
+@login_required(login_url='auth-login')
+@require_GET
 def home(req):
     busca = req.GET.get('q', '')
     colaboradores = Colaborador.objects.filter(nome__icontains=busca)
     return render(req, 'nucleo/index.html', {
         'colaboradores': colaboradores,
+        'user': req.user,
     })
 
+
+@login_required(login_url='auth-login')
+@require_GET
 def tela_criar(req):
-    return render(req, 'nucleo/forms/criar.html')
+    return render(req, 'nucleo/forms/criar.html', {
+        'setores': Setor.objects.all(),
+    })
 
+
+@login_required(login_url='auth-login')
+@require_POST
 def salvar(req):
-    nome = req.POST.get('nome')
+    nome = req.POST.get('nome', '')
     telefone = req.POST.get('telefone', '')
+    setor_id = req.POST.get('setor_id')
 
-    if not nome or not  nome.strip():
+    if not nome.strip():
         messages.error(req, 'Colaborador não cadastrado! Preencher o campo: Nome')
+        return redirect('nucleo-criar')
+
+    setor = Setor.objects.filter(id=setor_id).first()
+    if setor is None:
+        messages.error(req, 'Colaborador não cadastrado! Selecione um setor válido.')
         return redirect('nucleo-criar')
 
     Colaborador.objects.create(
         nome=nome.strip(),
-        telefone=telefone
+        telefone=telefone,
+        setor=setor,
     )
     messages.success(req, 'Colaborador cadastrado com sucesso!')
-    return redirect('nucleo-criar')
+    return redirect('nucleo-inicial')
 
+
+@login_required(login_url='auth-login')
+@require_http_methods(["GET", "POST"])
 def editar(req, id):
     colaborador = get_object_or_404(Colaborador, id=id)
 
     if req.method == 'POST':
         nome = req.POST.get('nome', '')
         telefone = req.POST.get('telefone', '')
+        setor_id = req.POST.get('setor')
 
         if not nome.strip():
             messages.error(req, 'Colaborador não atualizado! Preencher o campo Nome')
             return redirect('nucleo-editar', id=id)
 
+        setor = Setor.objects.filter(id=setor_id).first()
+        if setor is None:
+            messages.error(req, 'Colaborador não atualizado! Selecione um setor válido.')
+            return redirect('nucleo-editar', id=id)
+
         colaborador.nome = nome.strip()
         colaborador.telefone = telefone
+        colaborador.setor = setor
         colaborador.save()
         messages.success(req, 'Colaborador atualizado com sucesso!')
         return redirect('nucleo-inicial')
 
     return render(req, 'nucleo/forms/editar.html', {
         'colaborador': colaborador,
+        'setores': Setor.objects.all(),
     })
 
+
+@login_required(login_url='auth-login')
+@require_POST
 def excluir(req, id):
     colaborador = get_object_or_404(Colaborador, id=id)
 
-    if req.method == 'POST':
-        try:
-            colaborador.delete()
-        except ProtectedError:
-            messages.error(req, 'Colaborador não pôde ser excluído: Associado a um empréstimo.')
-        else:
-            messages.success(req, 'Colaborador excluído com sucesso!')
+    try:
+        colaborador.delete()
+    except ProtectedError:
+        messages.error(req, 'Colaborador não pôde ser excluído: Associado a um empréstimo.')
+    else:
+        messages.success(req, 'Colaborador excluído com sucesso!')
 
     return redirect('nucleo-inicial')
 
 # Equipamentos
+@login_required(login_url='auth-login')
+@require_GET
 def equipa (req):
     equipamentos = Equipamento.objects.all()
     return render(req, 'nucleo/equipamentos/listar.html', {
         'equipamentos': equipamentos,
     }) 
 
+@login_required(login_url='auth-login')
+@require_GET
 def equipa_criar (req):
     return render(req, 'nucleo/equipamentos/criar.html')
 
+@login_required(login_url='auth-login')
+@require_POST
 def equipa_salvar (req):
     nome = req.POST.get('nome')
 
@@ -87,6 +125,9 @@ def equipa_salvar (req):
     messages.success(req, 'Equipamento cadastrado com sucesso!')
     return redirect('equipa-criar')
 
+
+@login_required(login_url='auth-login')
+@require_http_methods(["GET", "POST"])
 def equipa_editar(req, id):
     equipamento = get_object_or_404(Equipamento, id=id)
 
@@ -106,20 +147,24 @@ def equipa_editar(req, id):
         'equipamento': equipamento,
     })
 
+
+@login_required(login_url='auth-login')
+@require_POST
 def equipa_excluir(req, id):
     equipamento = get_object_or_404(Equipamento, id=id)
-
-    if req.method == 'POST':
-        try:
-            equipamento.delete()
-        except ProtectedError:
-            messages.error(req, 'Equipamento não pôde ser excluído: Associado a um empréstimo.')
-        else:
-            messages.success(req, 'Equipamento excluído com sucesso!')
+    
+    try:
+        equipamento.delete()
+    except ProtectedError:
+        messages.error(req, 'Equipamento não pôde ser excluído: Associado a um empréstimo.')
+    else:
+        messages.success(req, 'Equipamento excluído com sucesso!')
 
     return redirect('equipa')
 
 # Emprestimo
+@login_required(login_url='auth-login')
+@require_http_methods(["GET", "POST"])
 def emprest_criar(req):
     if req.method == 'POST':
         try:
@@ -173,11 +218,15 @@ def emprest_criar(req):
     'status': Emprestimo.status_choices[: 2],
     })
 
+@login_required(login_url='auth-login')
+@require_GET
 def emprest_listar(req):
     emprestimo = Emprestimo.objects.select_related('colaborador', 'equipamento',).all()
 
     return render(req, 'nucleo/emprestimo/listar.html', {'emprestimos': emprestimo,})
 
+@login_required(login_url='auth-login')
+@require_http_methods(["GET", "POST"])
 def emprest_editar(req, id):
     emprestimo = get_object_or_404(Emprestimo, pk=id)
 
@@ -227,6 +276,8 @@ def emprest_editar(req, id):
     })
 
 # Relatórios
+@login_required(login_url='auth-login')
+@require_GET
 def rel_emprest (req):
     filtro_nome = req.GET.get('nome', '').strip()
     filtro_status = req.GET.get('status', '')
